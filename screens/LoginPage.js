@@ -41,8 +41,7 @@ const LoginPage = () => {
           response.payload.message || "Login failed. Please try again."
         );
       }
-      setEmail(" ");
-      setPassword(" ");
+      setUser("");
       navigation.navigate("SuccessRegistration")
     } catch (error) {
       setError(error.message);

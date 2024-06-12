@@ -45,26 +45,20 @@ const Registration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    if (!rectangleCheckboxchecked) {
-      Alert.alert(
-        "Error",
-        "You must accept the Privacy Policy and Terms of Use."
-      );
-      return;
-    }
-      // const response = await dispatch(registerUserAsync(user));
-      // if (!response.payload.success) {
-      //   throw new Error(
-      //     response.payload.message || "Registration failed. Please try again."
-      //   );
-      // }
-      // navigation.navigate("SuccessRegistration");
+      if (!rectangleCheckboxchecked) {
+        Alert.alert(
+          "Error",
+          "You must accept the Privacy Policy and Terms of Use."
+        );
+        return;
+      }
       const response = await dispatch(registerUserAsync(user));
       if (!response.payload.success) {
         throw new Error(
           response.payload.message || "Registration failed. Please try again."
         );
       }
+      setUser("");
       navigation.navigate("SuccessRegistration");
     } catch (error) {
       setError(error.message);
