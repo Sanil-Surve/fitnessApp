@@ -10,9 +10,11 @@ import RegisterPage32 from "./screens/RegisterPage32";
 import RegisterPage33 from "./screens/RegisterPage33";
 import LoginPage from "./screens/LoginPage";
 import SuccessRegistration from "./screens/SuccessRegistration";
-
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
+
 
 const App = () => {
   const [hideSplashScreen, setHideSplashScreen] = React.useState(true);
@@ -32,52 +34,54 @@ const App = () => {
 
   return (
     <>
-      <NavigationContainer>
-        {hideSplashScreen ? (
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name="Registration"
-              component={Registration}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterPage1"
-              component={RegisterPage1}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterPage2"
-              component={RegisterPage2}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterPage31"
-              component={RegisterPage31}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterPage32"
-              component={RegisterPage32}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterPage33"
-              component={RegisterPage33}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="LoginPage"
-              component={LoginPage}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="SuccessRegistration"
-              component={SuccessRegistration}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
-        ) : null}
-      </NavigationContainer>
+      <Provider store={store}>
+          <NavigationContainer>
+            {hideSplashScreen ? (
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen
+                  name="Registration"
+                  component={Registration}
+                  options={{ headerShown: false }}
+                />
+                {/* <Stack.Screen
+                  name="RegisterPage1"
+                  component={RegisterPage1}
+                  options={{ headerShown: false }}
+                /> */}
+                <Stack.Screen
+                  name="RegisterPage2"
+                  component={RegisterPage2}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RegisterPage31"
+                  component={RegisterPage31}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RegisterPage32"
+                  component={RegisterPage32}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RegisterPage33"
+                  component={RegisterPage33}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="LoginPage"
+                  component={LoginPage}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="SuccessRegistration"
+                  component={SuccessRegistration}
+                  options={{ headerShown: false }}
+                />
+              </Stack.Navigator>
+            ) : null}
+          </NavigationContainer>
+      </Provider>
     </>
   );
 };

@@ -9,8 +9,14 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import GlobalStyles from "../GlobalStyles";
+import { useSelector } from "react-redux";
+import { selectUser } from "../app/userSlice";
+
 
 const SuccessRegistration = () => {
+  const { currentUser } = useSelector(selectUser);
+  const firstName = currentUser.firstName;
+
   return (
     <ScrollView
       style={styles.successRegistration}
@@ -44,7 +50,7 @@ const SuccessRegistration = () => {
                   styles.welcomeStefaniPosition,
                 ]}
               >
-                Welcome, Stefani
+                Welcome, {firstName}
               </Text>
             </View>
           </View>

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   ScrollView,
   Text,
@@ -9,16 +9,50 @@ import {
   TextInput,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Checkbox as RNPCheckbox } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../GlobalStyles";
+import { registerUserAsync } from "../app/userSlice"; // Import the slice and action
 
 const RegisterPage1 = () => {
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const [rectangleCheckboxchecked, setRectangleCheckboxchecked] =
     useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const handleChange = (name, value) => {
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!rectangleCheckboxchecked) {
+      Alert.alert(
+        "Error",
+        "You must accept the Privacy Policy and Terms of Use."
+      );
+      return;
+    }
+    const response = await dispatch(registerUserAsync(user));
+    if (!response.payload.success) {
+      throw new Error(
+        response.payload.message || "Registration failed. Please try again."
+      );
+    }
+    navigation.navigate("LoginPage");
+  };
 
   return (
     <ScrollView
@@ -60,110 +94,95 @@ const RegisterPage1 = () => {
                   </Text>
                 </View>
                 <View style={[styles.label, styles.labelLayout]}>
-                  <View
-                    style={[
-                      styles.labelChildPosition,
-                      styles.labelChildPosition1,
-                    ]}
-                  >
+                  <View style={styles.labelChildPosition}>
                     <View
                       style={[
                         styles.labelBgChild,
                         styles.childBorder,
                         styles.labelChildPosition,
-                        styles.labelChildPosition1,
                       ]}
                     />
                   </View>
                   <View style={styles.placeholder}>
                     <Image
-                      style={[
-                        styles.iconlylightOutlineprofile,
-                        styles.labelChildPosition,
-                      ]}
+                      style={styles.iconlylightOutlineprofile}
                       resizeMode="cover"
                       source={require("../assets/iconlylightoutlineprofile.png")}
                     />
                     <TextInput
-                      style={[styles.firstName, styles.emailPosition, styles.textBox]}
+                      style={styles.firstName}
                       placeholder="First Name"
                       keyboardType="default"
                       placeholderTextColor="#ada4a5"
+                      value={user.firstName}
+                      onChangeText={(text) => handleChange("firstName", text)}
                     />
                   </View>
                 </View>
                 <View style={[styles.label1, styles.labelLayout]}>
-                  <View style={styles.labelChildPosition1}>
+                  <View style={styles.labelChildPosition}>
                     <View
                       style={[
                         styles.labelBgChild,
                         styles.childBorder,
                         styles.labelChildPosition,
-                        styles.labelChildPosition1,
-                      ]}
-                    />
-                  </View>
-                  <View
-                    style={[styles.placeholder1, styles.placeholderPosition]}
-                  >
-                    <Image
-                      style={[
-                        styles.iconlylightmessage,
-                        styles.hidePasswordLayout,
-                      ]}
-                      resizeMode="cover"
-                      source={require("../assets/iconlylightmessage.png")}
-                    />
-                    <TextInput
-                      style={[styles.email, styles.emailPosition]}
-                      placeholder="Email"
-                      keyboardType="default"
-                      placeholderTextColor="#ada4a5"
-                      textContentType="emailAddress"
-                    />
-                  </View>
-                </View>
-                <View style={[styles.label2, styles.labelLayout]}>
-                  <View style={styles.labelChildPosition1}>
-                    <View
-                      style={[
-                        styles.labelBgChild,
-                        styles.childBorder,
-                        styles.labelChildPosition,
-                        styles.labelChildPosition1,
                       ]}
                     />
                   </View>
                   <View style={styles.placeholder}>
                     <Image
-                      style={[
-                        styles.iconlylightOutlineprofile,
-                        styles.labelChildPosition,
-                      ]}
+                      style={styles.iconlylightOutlineprofile}
                       resizeMode="cover"
                       source={require("../assets/iconlylightoutlineprofile.png")}
                     />
                     <TextInput
-                      style={[styles.firstName, styles.emailPosition]}
+                      style={styles.firstName}
                       placeholder="Last Name"
                       keyboardType="default"
                       placeholderTextColor="#ada4a5"
+                      value={user.lastName}
+                      onChangeText={(text) => handleChange("lastName", text)}
                     />
                   </View>
                 </View>
-                <View style={[styles.label3, styles.labelLayout]}>
-                  <View style={styles.labelChildPosition1}>
+                <View style={[styles.label2, styles.labelLayout]}>
+                  <View style={styles.labelChildPosition}>
                     <View
                       style={[
                         styles.labelBgChild,
                         styles.childBorder,
                         styles.labelChildPosition,
-                        styles.labelChildPosition1,
+                      ]}
+                    />
+                  </View>
+                  <View style={styles.placeholder}>
+                    <Image
+                      style={styles.iconlylightmessage}
+                      resizeMode="cover"
+                      source={require("../assets/iconlylightmessage.png")}
+                    />
+                    <TextInput
+                      style={styles.email}
+                      placeholder="Email"
+                      keyboardType="default"
+                      placeholderTextColor="#ada4a5"
+                      value={user.email}
+                      onChangeText={(text) => handleChange("email", text)}
+                    />
+                  </View>
+                </View>
+                <View style={[styles.label3, styles.labelLayout]}>
+                  <View style={styles.labelChildPosition}>
+                    <View
+                      style={[
+                        styles.labelBgChild,
+                        styles.childBorder,
+                        styles.labelChildPosition,
                       ]}
                     />
                   </View>
                   <TouchableOpacity
-                    style={[styles.hidePassword, styles.hidePasswordLayout]}
+                    style={styles.hidePassword}
                     activeOpacity={0.2}
                     onPress={() => {}}
                   >
@@ -173,24 +192,20 @@ const RegisterPage1 = () => {
                       source={require("../assets/hidepassword.png")}
                     />
                   </TouchableOpacity>
-                  <View
-                    style={[styles.placeholder3, styles.placeholderPosition]}
-                  >
+                  <View style={styles.placeholder}>
                     <Image
-                      style={[
-                        styles.iconlylightmessage,
-                        styles.hidePasswordLayout,
-                      ]}
+                      style={styles.iconlylightlock}
                       resizeMode="cover"
                       source={require("../assets/iconlylightlock.png")}
                     />
                     <TextInput
-                      style={[styles.password, styles.emailPosition]}
+                      style={styles.password}
                       placeholder="Password"
                       keyboardType="default"
                       secureTextEntry
                       placeholderTextColor="#ada4a5"
-                      textContentType="password"
+                      value={user.password}
+                      onChangeText={(text) => handleChange("password", text)}
                     />
                   </View>
                 </View>
@@ -199,54 +214,36 @@ const RegisterPage1 = () => {
             <TouchableOpacity
               style={[styles.buttonLargeRegister, styles.mt147]}
               activeOpacity={0.2}
-              onPress={() => navigation.navigate("RegisterPage2")}
+              onPress={handleSubmit}
             >
               <LinearGradient
-                style={[
-                  styles.buttonLargeRegisterChild,
-                  styles.labelChildPosition,
-                  styles.labelChildPosition1,
-                ]}
+                style={styles.buttonLargeRegisterChild}
                 locations={[0, 1]}
                 colors={["#92a3fd", "#9dceff"]}
               />
-              <Text
-                style={[
-                  styles.register,
-                  styles.registerTypo,
-                  styles.heyThereLayout,
-                ]}
-              >
-                Register
-              </Text>
+              <Text style={styles.register}>Register</Text>
             </TouchableOpacity>
           </View>
           <View style={[styles.or, styles.mt20]}>
             <Text style={styles.or1}>Or</Text>
             <Image
-              style={[styles.orChild, styles.orItemPosition]}
+              style={styles.orChild}
               resizeMode="cover"
               source={require("../assets/vector-67.png")}
             />
             <Image
-              style={[styles.orItem, styles.orItemPosition]}
+              style={styles.orItem}
               resizeMode="cover"
               source={require("../assets/vector-68.png")}
             />
           </View>
           <View style={[styles.loginSocialMedia, styles.mt20]}>
             <TouchableOpacity
-              style={[styles.rectangleParent, styles.groupLayout]}
+              style={styles.rectangleParent}
               activeOpacity={0.2}
               onPress={() => {}}
             >
-              <View
-                style={[
-                  styles.groupChild,
-                  styles.groupLayout,
-                  styles.childBorder,
-                ]}
-              />
+              <View style={styles.groupChild} />
               <Image
                 style={styles.iconPosition}
                 resizeMode="cover"
@@ -254,19 +251,13 @@ const RegisterPage1 = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.rectangleGroup, styles.groupLayout]}
+              style={styles.rectangleGroup}
               activeOpacity={0.2}
               onPress={() => {}}
             >
-              <View
-                style={[
-                  styles.groupChild,
-                  styles.groupLayout,
-                  styles.childBorder,
-                ]}
-              />
+              <View style={styles.groupChild} />
               <Image
-                style={[styles.facebook1Icon, styles.iconPosition]}
+                style={styles.facebook1Icon}
                 resizeMode="cover"
                 source={require("../assets/facebook-1.png")}
               />

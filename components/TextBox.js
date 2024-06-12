@@ -3,6 +3,7 @@ import { TextInput, StyleSheet } from "react-native";
 import GlobalStyles from "../GlobalStyles";
 
 const TextBox = props => {
+
   return (
     <TextInput
       style={{...styles.mainStyle, ...props.textBoxStyle}}
@@ -11,6 +12,8 @@ const TextBox = props => {
       placeholderTextColor = {GlobalStyles.Color.mediumGray}
       textContentType = {props.textBoxContentType}
       secureTextEntry = {props.isSecureTextEntry}
+      value={props.value}
+      onChangeText={props.onChangeText}
     />
   );
 };

@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   ScrollView,
   Text,
@@ -12,9 +14,40 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../GlobalStyles";
+import { loginUserAsync } from "../app/userSlice";
 
 const LoginPage = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [user, setUser] = useState({
+    email: "",
+    password: ""
+  })
+  const [error, setError] = useState("");
+
+  const handleChange = (name, value) => {
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await dispatch(loginUserAsync(user));
+      if (!response.payload.success) {
+        throw new Error(
+          response.payload.message || "Login failed. Please try again."
+        );
+      }
+      setEmail(" ");
+      setPassword(" ");
+      navigation.navigate("SuccessRegistration")
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <ScrollView
@@ -85,6 +118,8 @@ const LoginPage = () => {
                         keyboardType="default"
                         placeholderTextColor="#ada4a5"
                         textContentType="emailAddress"
+                        value={user.email}
+                        onChangeText={(text) => handleChange("email", text)}
                       />
                     </View>
                   </View>
@@ -119,15 +154,18 @@ const LoginPage = () => {
                         secureTextEntry
                         placeholderTextColor="#ada4a5"
                         textContentType="password"
+                        value={user.password}
+                        onChangeText={(text) => handleChange("password", text)}
                       />
                     </View>
                   </View>
                 </View>
+                  {error && <Text style={styles.errorMessage}>{error}</Text>}
               </View>
               <TouchableOpacity
                 style={[styles.buttonLogin, styles.mt285]}
                 activeOpacity={0.2}
-                onPress={() => navigation.navigate("SuccessRegistration")}
+                onPress={handleSubmit}
               >
                 <LinearGradient
                   style={[
@@ -213,7 +251,7 @@ const LoginPage = () => {
         <TouchableOpacity
           style={[styles.registerText, styles.mt30]}
           activeOpacity={0.2}
-          onPress={() => navigation.navigate("RegisterPage1")}
+          onPress={() => navigation.navigate("Registration")}
         >
           <Text
             style={[styles.dontHaveAnAccountYetReg, styles.heyTherePosition]}
@@ -481,6 +519,11 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     width: "100%",
     overflow: "hidden",
+  },
+  errorMessage: {
+    color: "rgba(206, 19, 19, 0.934)",
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 
