@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   ScrollView,
   Text,
@@ -13,17 +14,62 @@ import {
 import { Checkbox as RNPCheckbox } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faUser } from '@fortawesome/free-regular-svg-icons/faUser'
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faUser } from "@fortawesome/free-regular-svg-icons/faUser";
 import GlobalStyles from "../GlobalStyles";
 import TextLargeRegular from "../components/TextLargeRegular";
 import TextBox from "../components/TextBox";
 import { color } from "react-native-reanimated";
+import { registerUserAsync } from "../app/userSlice"; // Import the slice and action
 
 const Registration = () => {
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
   const [rectangleCheckboxchecked, setRectangleCheckboxchecked] =
     useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const handleChange = (name, value) => {
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+    if (!rectangleCheckboxchecked) {
+      Alert.alert(
+        "Error",
+        "You must accept the Privacy Policy and Terms of Use."
+      );
+      return;
+    }
+      // const response = await dispatch(registerUserAsync(user));
+      // if (!response.payload.success) {
+      //   throw new Error(
+      //     response.payload.message || "Registration failed. Please try again."
+      //   );
+      // }
+      // navigation.navigate("SuccessRegistration");
+      const response = await dispatch(registerUserAsync(user));
+      if (!response.payload.success) {
+        throw new Error(
+          response.payload.message || "Registration failed. Please try again."
+        );
+      }
+      navigation.navigate("SuccessRegistration");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <ScrollView
@@ -37,10 +83,11 @@ const Registration = () => {
           <View>
             <View style={styles.frameParent}>
               <View style={styles.titleSection}>
-                <TextLargeRegular text="Hey there," textStyle={styles.heyThereLayout}></TextLargeRegular>
-                <Text style={[styles.formTitle]}>
-                  Create an Account 
-                </Text>
+                <TextLargeRegular
+                  text="Hey there,"
+                  textStyle={styles.heyThereLayout}
+                ></TextLargeRegular>
+                <Text style={[styles.formTitle]}>Create an Account</Text>
               </View>
               <View style={[styles.labelSection, styles.mt30]}>
                 <View style={styles.privacyPolicy}>
@@ -79,8 +126,16 @@ const Registration = () => {
                     />
                   </View>
                   <View style={styles.placeholder}>
-                    <FontAwesomeIcon icon={ faUser } style={styles.formFieldIcon} />
-                    <TextBox placeholder="First Name" textBoxStyle={styles.formTextBox}  ></TextBox>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={styles.formFieldIcon}
+                    />
+                    <TextBox
+                      placeholder="First Name"
+                      textBoxStyle={styles.formTextBox}
+                      value={user.firstName}
+                      onChangeText={(text) => handleChange("firstName", text)}
+                    ></TextBox>
                   </View>
                 </View>
                 <View style={[styles.label2, styles.labelLayout]}>
@@ -103,8 +158,12 @@ const Registration = () => {
                       resizeMode="cover"
                       source={require("../assets/iconlylightoutlineprofile.png")}
                     />
-                    <TextBox placeholder="Last Name" textBoxStyle={styles.formTextBox}  ></TextBox>
-                    
+                    <TextBox
+                      placeholder="Last Name"
+                      textBoxStyle={styles.formTextBox}
+                      value={user.lastName}
+                      onChangeText={(text) => handleChange("lastName", text)}
+                    ></TextBox>
                   </View>
                 </View>
                 <View style={[styles.label1, styles.labelLayout]}>
@@ -129,10 +188,16 @@ const Registration = () => {
                       resizeMode="cover"
                       source={require("../assets/iconlylightmessage.png")}
                     />
-                    <TextBox placeholder="Email" textBoxStyle={styles.formTextBox} textBoxContentType="emailAddress"  ></TextBox>
+                    <TextBox
+                      placeholder="Email"
+                      textBoxStyle={styles.formTextBox}
+                      textBoxContentType="emailAddress"
+                      value={user.email}
+                      onChangeText={(text) => handleChange("email", text)}
+                    ></TextBox>
                   </View>
                 </View>
-                
+
                 <View style={[styles.label3, styles.labelLayout]}>
                   <View style={styles.labelChildPosition1}>
                     <View
@@ -166,15 +231,23 @@ const Registration = () => {
                       resizeMode="cover"
                       source={require("../assets/iconlylightlock.png")}
                     />
-                    <TextBox placeholder="Email" textBoxStyle={styles.formTextBox} textBoxContentType="password" isSecureTextEntry={true}  ></TextBox>
+                    <TextBox
+                      placeholder="Password"
+                      textBoxStyle={styles.formTextBox}
+                      textBoxContentType="password"
+                      isSecureTextEntry={true}
+                      value={user.password}
+                      onChangeText={(text) => handleChange("password", text)}
+                    ></TextBox>
                   </View>
                 </View>
               </View>
+              {error && <Text style={styles.errorMessage}>{error}</Text>}
             </View>
             <TouchableOpacity
               style={[styles.buttonLargeRegister, styles.mt147]}
               activeOpacity={0.2}
-              onPress={() => navigation.navigate("RegisterPage2")}
+              onPress={handleSubmit}
             >
               <LinearGradient
                 style={[
@@ -274,7 +347,7 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     width: "100%",
     overflow: "hidden",
-    borderColor: '#000',
+    borderColor: "#000",
     borderWidth: 1,
   },
   RegistrationContent: {
@@ -387,7 +460,7 @@ const styles = StyleSheet.create({
     top: 0,
     position: "absolute",
   },
-  
+
   createAnAccount: {
     top: 29,
     fontSize: GlobalStyles.FontSize.h4,
@@ -589,7 +662,11 @@ const styles = StyleSheet.create({
     height: 21,
     width: 261,
   },
-  
+  errorMessage: {
+    color: "rgba(206, 19, 19, 0.934)",
+    fontSize: 14,
+    marginTop: 5,
+  },
 });
 
 export default Registration;
